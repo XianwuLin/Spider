@@ -5,7 +5,7 @@
 #   E-mail  :   linxianwusx@gmail.com
 #   Date    :   15/02/19 20:45:28
 #
-
+# 模拟了session
 import cookielib, urllib2
 import time
 import sys
