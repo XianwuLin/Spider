@@ -19,7 +19,7 @@ class _start_download(threading.Thread):
         threading.Thread.__init__(self)
         self.url = file_url
         self.name = file_name
-        
+
     def run(self):
         global  _use_line
         global _t
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     import sqlite3
     import re
 
-    con = sqlite3.connect('E:\Program\python\spider\web327\item.db')
+    con = sqlite3.connect('item.db')
     cu = con.cursor()
     cu.execute('Select url from image')
     image = cu.fetchall()
