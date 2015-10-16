@@ -102,7 +102,8 @@ class Downloader(object):
             if response.status_code == requests.codes.ok:
                 return response.content.decode(response.encoding,'ignore').encode("utf-8")
             else:
-                raise Exception("HttpError", "Not response ok code !")
+                response.raise_for_status()
+                #raise Exception("HttpError", "Not response ok code !")
         except Exception as e:
             return e
 

@@ -4,6 +4,7 @@
 import requests
 from BeautifulSoup import BeautifulSoup as bs
 import urlparse
+from urllib2 import HTTPError
 import ConfigParser
 import os
 import cchardet
@@ -50,7 +51,8 @@ def getHtml(url, timeOut):
         if response.status_code == requests.codes.ok:
             return response.content
         else:
-            raise Exception("HttpError", "return code: " + response.status_code)
+            response.raise_for_status()
+            #raise Exception("HttpE#rror", "return code: " + str(response.status_code))
     except Exception as e:
         return e
 
@@ -149,9 +151,11 @@ if __name__ == "__main__":
         elif mode == 2:  # 宽度寻找
             main1(name, startUrl, level)
     else:  # 如果startUrl不存在，则寻找name_startUrl.txt文件
-        with open(name + "_startUrl.txt", 'w') as f:
+        with open(name + "_startUrl.txt", 'r') as f:
             startUrl = f.readline().strip()
-            if mode == 1:  # 深度寻找
-                main(name, startUrl, level)
-            elif mode == 2:  # 宽度寻找
-                main1(name, startUrl, level)
+            while startUrl:
+                if mode == 1:  # 深度寻找
+                    main(name, startUrl, level)
+                elif mode == 2:  # 宽度寻找
+                    main1(name, startUrl, level)
+                startUrl = f.readline().strip()
