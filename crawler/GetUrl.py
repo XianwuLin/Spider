@@ -87,7 +87,7 @@ def getDeepList(url, timeout=10, retryTimes=3):
                 deepUrlList.add(urlNext)
     return deepUrlList
 
-def main(name, startUrl, level):
+def main(name, startUrl, level, timeOut):
     """深度挖掘网址"""
     downloaded = set()
     urlList = set()
@@ -95,7 +95,7 @@ def main(name, startUrl, level):
     for i in range(level):
         for j in urlList:
             if j:
-                urlListTemp = getDeepList(j)
+                urlListTemp = getDeepList(j, timeOut)
                 downloaded.add(j)
                 with open(name + "_url.txt", 'a') as f:
                     f.write("\n".join(urlListTemp).strip())
@@ -115,12 +115,12 @@ def main(name, startUrl, level):
                         f.write("\n".join(urlList).strip())
 
 
-def main1(name, startUrl, width):
+def main1(name, startUrl, width, timeOut):
     """水平挖掘网址"""
 
     for i in xrange(1, width + 1):
         url = startUrl % i
-        urlList = getDeepList(url)
+        urlList = getDeepList(url, timeOut)
         with open(name + "_url.txt", 'a') as f:
             f.write("\n".join(urlList))
 
@@ -142,20 +142,21 @@ if __name__ == "__main__":
     mode = cf.getint('LF', "Mode")
     startUrl = cf.get('LF', 'StartUrl')
     level = cf.getint('LF', 'Level')
+    timeOut = cf.getint('LD',"timeOut")
 
     if os.path.exists(name + '_url.txt'):  # 如果之前存在下载列表，则删除之
         os.remove(name + '_url.txt')
     if startUrl:  # 如果startUrl存在
         if mode == 1:  # 深度寻找
-            main(name, startUrl, level)
+            main(name, startUrl, level, timeOut)
         elif mode == 2:  # 宽度寻找
-            main1(name, startUrl, level)
+            main1(name, startUrl, level, timeOut)
     else:  # 如果startUrl不存在，则寻找name_startUrl.txt文件
         with open(name + "_startUrl.txt", 'r') as f:
             startUrl = f.readline().strip()
             while startUrl:
                 if mode == 1:  # 深度寻找
-                    main(name, startUrl, level)
+                    main(name, startUrl, level, timeOut)
                 elif mode == 2:  # 宽度寻找
-                    main1(name, startUrl, level)
+                    main1(name, startUrl, level, timeOut)
                 startUrl = f.readline().strip()

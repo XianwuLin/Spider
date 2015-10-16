@@ -64,9 +64,10 @@ class Item(object):
 
 class Downloader(object):
 
-    def __init__(self, name, urlList, downloadedNum, queue, mutLine, proxy):
+    def __init__(self, name, timeOut, urlList, downloadedNum, queue, mutLine, proxy):
         self.queue = queue
         self.name = name
+        self.timeOut = timeOut
         self.downloadedNum = downloadedNum
         self.urlList = urlList
         self.threadList = []
@@ -114,12 +115,12 @@ class Downloader(object):
             if not temp:
                 break  # if there are none new item, stop download
             item = Item(temp[0], temp[1])
-            html = self.getHtml(item.website, 10)
+            html = self.getHtml(item.website, self.timeOut)
             # if download html some error, retry
             while not isinstance(html, str):
                 print item.name, "\tRetry: " + str(html)  # 如果出错，html为出错信息
                 retry += 1
-                html = self.getHtml(item.website, 10)
+                html = self.getHtml(item.website, self.timeOut)
                 # if retry 3 times, if will finished download and set html =
                 # "None"
                 if retry >= 2 and (not isinstance(html, str)):
@@ -219,6 +220,7 @@ class ListDownloader(object):
         self.name = cf.get('LD', "Name")
         self.proxy = cf.get('LD', "Proxy")
         self.mutLine = cf.getint("LD", "MutLine")
+        self.timeOut = cf.getint("LD", "timeOut")
         self.queue = Queue.Queue()
         self.downloadedNum = 0
         self.urlList = []
@@ -274,7 +276,14 @@ class ListDownloader(object):
         self.downloadedNum, self.urlList = self.getDownloadUrlList()
         print "START DOWNLOAD".center(30, "*")
         downloader = Downloader(
-            self.name, self.urlList, self.downloadedNum, self.queue, self.mutLine, self.proxy)
+            name = self.name,
+            urlList = self.urlList,
+            downloadedNum = self.downloadedNum,
+            timeOut = self.timeOut,
+            queue = self.queue,
+            mutLine = self.mutLine,
+            proxy = self.proxy
+        )
         downloader.run()
         insertDB = InsertDB(self.queue, self.name)
         insertDB.run()
